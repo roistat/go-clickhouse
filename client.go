@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+const (
+	MethodPost = "POST"
+	MethodGet  = "GET"
+)
+
 type getQuery func(host string, query string) (string, error)
 type postQuery func(host string, query string) (string, error)
 
@@ -18,10 +23,10 @@ type queryClient struct {
 func request(method, host, data string) (res string, err error) {
 	var resp *http.Response
 	switch method {
-	case http.MethodPost:
+	case MethodPost:
 		resp, err = http.Post(host, "text/plain", strings.NewReader(data))
 	default:
-	case http.MethodGet:
+	case MethodGet:
 		resp, err = http.Get(host + data)
 	}
 	if err == nil {
@@ -35,7 +40,7 @@ func request(method, host, data string) (res string, err error) {
 }
 
 func getQueryInstance(host, stmt string) (res string, err error) {
-	res, err = request(http.MethodGet, host, "?query="+url.QueryEscape(stmt))
+	res, err = request(MethodGet, host, "?query="+url.QueryEscape(stmt))
 	if err == nil {
 		res = strings.Trim(res, "\n\r")
 	}
@@ -44,7 +49,7 @@ func getQueryInstance(host, stmt string) (res string, err error) {
 }
 
 func postQueryInstance(host, stmt string) (res string, err error) {
-	res, err = request(http.MethodPost, host, stmt)
+	res, err = request(MethodPost, host, stmt)
 	if err == nil {
 		res = strings.Trim(res, "\n\r")
 	}
