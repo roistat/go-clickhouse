@@ -42,7 +42,6 @@ func (q *Query) Iter() *Iter {
 func (q *Query) Exec() (err error) {
 	var resp string
 	prepared := prepare(q.Stmt, q.args)
-	log.Println("Prepared query:", prepared)
 	resp, err = q.conn.client.post(q.conn.Host, prepared)
 	if err == nil {
 		err = errorFromResponse(resp)
