@@ -1,21 +1,14 @@
 package clickhouse
 
 import (
-	"errors"
 	"log"
 	"strings"
 )
 
-func (c *Conn) Query(s string) *Query {
-	return &Query{
-		conn: c,
-		text: s,
-	}
-}
-
 type Query struct {
+	Stmt string
 	conn *Conn
-	text string
+	args []interface{}
 	iter *Iter
 }
 
@@ -24,24 +17,38 @@ func (q *Query) Iter() *Iter {
 		return q.iter
 	}
 
-	resp, err := q.conn.client.get(q.conn.Host, q.text)
+	prepared := prepare(q.Stmt, q.args)
+	resp, err := q.conn.client.get(q.conn.Host, prepared)
 	if err != nil {
 		q.iter = &Iter{
 			err: err,
 		}
 	}
 
-	if strings.Contains(resp, "Code:") {
+	err = errorFromResponse(resp)
+	if err != nil {
 		q.iter = &Iter{
-			err: errors.New(resp),
+			err: err,
+		}
+	} else {
+		q.iter = &Iter{
+			text: resp,
 		}
 	}
 
-	q.iter = &Iter{
-		text: resp,
+	return q.iter
+}
+
+func (q *Query) Exec() (err error) {
+	var resp string
+	prepared := prepare(q.Stmt, q.args)
+	log.Println("Prepared query:", prepared)
+	resp, err = q.conn.client.post(q.conn.Host, prepared)
+	if err == nil {
+		err = errorFromResponse(resp)
 	}
 
-	return q.iter
+	return err
 }
 
 type Iter struct {
@@ -59,7 +66,7 @@ func (iter *Iter) Scan(vars ...interface{}) bool {
 		return false
 	}
 	a := strings.Split(row, "\t")
-	if len(a) != len(vars) {
+	if len(a) < len(vars) {
 		return false
 	}
 	for i, v := range vars {
@@ -83,4 +90,13 @@ func (r *Iter) fetchNext() string {
 		r.text = r.text[pos+1:]
 	}
 	return res
+}
+
+func prepare(stmt string, args []interface{}) (res string) {
+	res = stmt
+	for _, arg := range args {
+		res = strings.Replace(res, "?", marshal(arg), 1)
+	}
+
+	return stmt
 }

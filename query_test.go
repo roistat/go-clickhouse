@@ -5,8 +5,14 @@ import (
 	"testing"
 )
 
-func nextResponse(c *Conn, resp string, err error) {
+func nextGetResponse(c *Conn, resp string, err error) {
 	c.client.get = func(host string, query string) (string, error) {
+		return resp, err
+	}
+}
+
+func nextPostResponse(c *Conn, resp string, err error) {
+	c.client.post = func(host string, query string) (string, error) {
 		return resp, err
 	}
 }
@@ -14,7 +20,7 @@ func nextResponse(c *Conn, resp string, err error) {
 func TestConn_Query(t *testing.T) {
 	conn := Connect("host.local")
 
-	nextResponse(conn, "1\t2", nil)
+	nextGetResponse(conn, "1\t2", nil)
 	iter := conn.Query("SELECT 1, 2 FROM table").Iter()
 	var v1, v2 int64
 	scan := iter.Scan(&v1, &v2)
@@ -24,7 +30,7 @@ func TestConn_Query(t *testing.T) {
 func TestIter_ScanInt(t *testing.T) {
 	conn := Connect("host.local")
 
-	nextResponse(conn, "1\t2", nil)
+	nextGetResponse(conn, "1\t2", nil)
 	iter := conn.Query("SELECT 1, 2 FROM table").Iter()
 	var v1, v2 int
 	scan := iter.Scan(&v1, &v2)
@@ -38,7 +44,7 @@ func TestIter_ScanInt(t *testing.T) {
 func TestIter_ScanInt64(t *testing.T) {
 	conn := Connect("host.local")
 
-	nextResponse(conn, "1\t2", nil)
+	nextGetResponse(conn, "1\t2", nil)
 	iter := conn.Query("SELECT 1, 2 FROM table").Iter()
 	var v1, v2 int64
 	scan := iter.Scan(&v1, &v2)
@@ -52,7 +58,7 @@ func TestIter_ScanInt64(t *testing.T) {
 func TestIter_ScanString(t *testing.T) {
 	conn := Connect("host.local")
 
-	nextResponse(conn, "test1\ttest2", nil)
+	nextGetResponse(conn, "test1\ttest2", nil)
 	iter := conn.Query("SELECT 'test1', 'test2' FROM table").Iter()
 	var v1, v2 string
 	scan := iter.Scan(&v1, &v2)
@@ -66,7 +72,7 @@ func TestIter_ScanString(t *testing.T) {
 func TestIter_ScanStringMultiple(t *testing.T) {
 	conn := Connect("host.local")
 
-	nextResponse(conn, "test1\ttest2\ntest3\ttest4", nil)
+	nextGetResponse(conn, "test1\ttest2\ntest3\ttest4", nil)
 	iter := conn.Query("SELECT 'test1', 'test2' FROM table").Iter()
 	var v1, v2 string
 	scan := iter.Scan(&v1, &v2)

@@ -31,3 +31,16 @@ func unmarshal(value interface{}, data string) (err error) {
 
 	return err
 }
+
+func marshal(value interface{}) string {
+	switch value.(type) {
+	case int:
+		return strconv.Itoa(value.(int))
+	case int64:
+		return strconv.FormatInt(value.(int64), 10)
+	case string:
+		return fmt.Sprintf("'%s'", value)
+	}
+
+	return "NULL"
+}
