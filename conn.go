@@ -13,7 +13,8 @@ const (
 )
 
 type Conn struct {
-	Host string
+	Host   string
+	client *queryClient
 }
 
 func Connect(host string) *Conn {
@@ -22,6 +23,9 @@ func Connect(host string) *Conn {
 
 	return &Conn{
 		Host: host,
+		client: &queryClient{
+			get: query,
+		},
 	}
 }
 

@@ -1,88 +1,86 @@
 package clickhouse
 
 import (
-	"bytes"
-	"net/http"
-	"net/url"
-	"strings"
 	"errors"
+	"log"
+	"strings"
 )
 
-type Statement struct {
-	Text string
+func (c *Conn) Query(s string) *Query {
+	return &Query{
+		conn: c,
+		text: s,
+	}
 }
 
-type QueryResult struct {
-	err error
+type Query struct {
+	conn *Conn
 	text string
+	iter *Iter
 }
 
-type Iter struct {
-	data string
-}
-
-func (r *QueryResult) Error() error {
-	return r.err
-}
-
-func (r *QueryResult) Iter() *QueryResult {
-	return r
-}
-
-func (r *QueryResult) Scan(...interface{}) bool {
-	var row string
-	pos := strings.Index(r.text, "\n")
-	if pos == -1 {
-		row = r.text
-		r.text = ""
-	} else {
-		row = r.text[:pos]
-		r.text = r.text[pos+1:]
+func (q *Query) Iter() *Iter {
+	if q.iter != nil {
+		return q.iter
 	}
 
-	if len(row) == 0 {
-		return false
-	}
-	//a := strings.Split(row, "\t")
-	return true
-}
-
-func (c *Conn) Query(s string) *QueryResult {
-	resp, err := query(c.Host, s)
+	resp, err := q.conn.client.get(q.conn.Host, q.text)
 	if err != nil {
-		return &QueryResult{
+		q.iter = &Iter{
 			err: err,
 		}
 	}
 
 	if strings.Contains(resp, "Code:") {
-		return &QueryResult{
+		q.iter = &Iter{
 			err: errors.New(resp),
 		}
 	}
 
-	return &QueryResult{
+	q.iter = &Iter{
 		text: resp,
 	}
+
+	return q.iter
 }
 
-func req(h string, s string) (res string, err error) {
-	resp, err := http.Get(h + s)
-	if err == nil {
-		defer resp.Body.Close()
-		buf := new(bytes.Buffer)
-		_, err = buf.ReadFrom(resp.Body)
-		res = buf.String()
-	}
-
-	return res, err
+type Iter struct {
+	err  error
+	text string
 }
 
-func query(h string, q string) (res string, err error) {
-	res, err = req(h, "?query="+url.QueryEscape(q))
-	if err == nil {
-		res = strings.Trim(res, "\n\r")
-	}
+func (r *Iter) Error() error {
+	return r.err
+}
 
-	return res, err
+func (iter *Iter) Scan(vars ...interface{}) bool {
+	row := iter.fetchNext()
+	if len(row) == 0 {
+		return false
+	}
+	a := strings.Split(row, "\t")
+	if len(a) != len(vars) {
+		return false
+	}
+	for i, v := range vars {
+		err := unmarshal(v, a[i])
+		if err != nil {
+			log.Fatal(err)
+			return false
+		}
+	}
+	return true
+}
+
+func (r *Iter) fetchNext() string {
+	var res string
+	pos := strings.Index(r.text, "\n")
+	if pos == -1 {
+		res = r.text
+		r.text = ""
+	} else {
+		res = r.text[:pos]
+		r.text = r.text[pos+1:]
+	}
+	return res
 }
