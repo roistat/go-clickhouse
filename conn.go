@@ -1,6 +1,8 @@
 package clickhouse
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -13,7 +15,7 @@ type Conn struct {
 	client *queryClient
 }
 
-func Connect(host string) *Conn {
+func NewConn(host string) *Conn {
 	host = "http://" + strings.Replace(host, "http://", "", 1)
 	host = strings.TrimRight(host, "/") + "/"
 
@@ -24,4 +26,16 @@ func Connect(host string) *Conn {
 			post: postQueryInstance,
 		},
 	}
+}
+
+func (c *Conn) Ping() (err error) {
+	var res string
+	res, err = request("GET", c.Host, "ping")
+	if err == nil {
+		if !strings.Contains(res, successTestResponse) {
+			err = errors.New(fmt.Sprintf("Clickhouse host response was '%s', expected '%s'.", res, successTestResponse))
+		}
+	}
+
+	return err
 }

@@ -9,40 +9,27 @@ type Query struct {
 	Stmt string
 	conn *Conn
 	args []interface{}
-	iter *Iter
 }
 
-func (q *Query) Iter() *Iter {
-	if q.iter != nil {
-		return q.iter
-	}
-
+func (q Query) Iter(conn *Conn) *Iter {
 	prepared := prepare(q.Stmt, q.args)
-	resp, err := q.conn.client.get(q.conn.Host, prepared)
+	resp, err := conn.client.get(conn.Host, prepared)
 	if err != nil {
-		q.iter = &Iter{
-			err: err,
-		}
+		return &Iter{err: err}
 	}
 
 	err = errorFromResponse(resp)
 	if err != nil {
-		q.iter = &Iter{
-			err: err,
-		}
+		return &Iter{err: err}
 	} else {
-		q.iter = &Iter{
-			text: resp,
-		}
+		return &Iter{text: resp}
 	}
-
-	return q.iter
 }
 
-func (q *Query) Exec() (err error) {
+func (q Query) Exec(conn *Conn) (err error) {
 	var resp string
 	prepared := prepare(q.Stmt, q.args)
-	resp, err = q.conn.client.post(q.conn.Host, prepared)
+	resp, err = conn.client.post(conn.Host, prepared)
 	if err == nil {
 		err = errorFromResponse(resp)
 	}

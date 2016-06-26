@@ -8,12 +8,12 @@ import (
 func TestConnect(t *testing.T) {
 	var conn *Conn
 
-	conn = Connect("host.local")
+	conn = NewConn("host.local")
 	assert.Equal(t, "http://host.local/", conn.Host)
 
-	conn = Connect("http://host.local/")
+	conn = NewConn("http://host.local/")
 	assert.Equal(t, "http://host.local/", conn.Host)
 
-	conn = Connect("http:/host.local")
+	conn = NewConn("http:/host.local")
 	assert.Equal(t, "http://http:/host.local/", conn.Host)
 }
