@@ -44,3 +44,20 @@ func prepareHttp(stmt string, args []interface{}) (res string) {
 
 	return res
 }
+
+func prepareHttpNew(stmt string, args []interface{}) string {
+	var res []byte
+	buf := []byte(stmt)
+	res = make([]byte, len(stmt))
+	k := 0
+	for _, ch := range buf {
+		if ch == '?' {
+			res = append(res, []byte(marshal(args[k]))...)
+			k++
+		} else {
+			res = append(res, ch)
+		}
+	}
+
+	return string(res)
+}
