@@ -42,5 +42,5 @@ func prepareHttp(stmt string, args []interface{}) (res string) {
 		res = strings.Replace(res, "?", marshal(arg), 1)
 	}
 
-	return stmt
+	return res
 }
