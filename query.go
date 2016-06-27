@@ -7,13 +7,15 @@ import (
 
 type Query struct {
 	Stmt string
-	conn *Conn
 	args []interface{}
 }
 
 func (q Query) Iter(conn *Conn) *Iter {
-	prepared := prepare(q.Stmt, q.args)
-	resp, err := conn.client.get(conn.Host, prepared)
+	resp, err := conn.transport.Exec(conn, q, false)
+	if err != nil {
+		return &Iter{err: err}
+	}
+
 	if err != nil {
 		return &Iter{err: err}
 	}
@@ -27,11 +29,11 @@ func (q Query) Iter(conn *Conn) *Iter {
 }
 
 func (q Query) Exec(conn *Conn) (err error) {
-	var resp string
-	prepared := prepare(q.Stmt, q.args)
-	resp, err = conn.client.post(conn.Host, prepared)
+	resp, err := conn.transport.Exec(conn, q, false)
 	if err == nil {
-		err = errorFromResponse(resp)
+		if err == nil {
+			err = errorFromResponse(resp)
+		}
 	}
 
 	return err
@@ -76,13 +78,4 @@ func (r *Iter) fetchNext() string {
 		r.text = r.text[pos+1:]
 	}
 	return res
-}
-
-func prepare(stmt string, args []interface{}) (res string) {
-	res = stmt
-	for _, arg := range args {
-		res = strings.Replace(res, "?", marshal(arg), 1)
-	}
-
-	return stmt
 }

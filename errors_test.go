@@ -1,8 +1,8 @@
 package clickhouse
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestErrorFromResponse(t *testing.T) {

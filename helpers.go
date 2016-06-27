@@ -13,6 +13,20 @@ type (
 	Rows    []Row
 )
 
+func NewHttpTransport() HttpTransport {
+	return HttpTransport{}
+}
+
+func NewConn(host string, t Transport) *Conn {
+	host = "http://" + strings.Replace(host, "http://", "", 1)
+	host = strings.TrimRight(host, "/") + "/"
+
+	return &Conn{
+		Host:      host,
+		transport: t,
+	}
+}
+
 func NewQuery(stmt string, args ...interface{}) Query {
 	return Query{
 		Stmt: stmt,
