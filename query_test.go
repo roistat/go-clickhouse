@@ -76,6 +76,45 @@ func TestIter_ScanStringMultiple(t *testing.T) {
 	}
 }
 
+func TestIter_ScanErrors(t *testing.T) {
+	tr := getMockTransport("test1\ttest2\ntest3\ttest4")
+	conn := NewConn(getHost(), tr)
+
+	iter := NewQuery("SELECT 'test1', 'test2'").Iter(conn)
+	var v1, v2, v3 string
+	scan := iter.Scan(&v1, &v2, &v3)
+	assert.False(t, scan)
+	assert.NoError(t, iter.Error())
+
+	var u1 Conn
+	scan = iter.Scan(&u1)
+	assert.False(t, scan)
+	assert.Error(t, iter.Error())
+
+	tr = getMockTransport("")
+	conn = NewConn(getHost(), tr)
+
+	iter = NewQuery("SELECT 'test1', 'test2'").Iter(conn)
+	scan = iter.Scan(&u1)
+	assert.False(t, scan)
+	assert.NoError(t, iter.Error())
+}
+
+func TestQuery_Exec(t *testing.T) {
+	tr := getMockTransport("")
+	conn := NewConn(getHost(), tr)
+
+	err := NewQuery("INSERT INTO table VALUES 1").Exec(conn)
+	assert.NoError(t, err)
+
+	tr = getMockTransport("Code: 69, ")
+	conn = NewConn(getHost(), tr)
+
+	err = NewQuery("INSERT INTO table VALUES 1").Exec(conn)
+	assert.Error(t, err)
+	assert.Equal(t, 69, err.(*DbError).Code())
+}
+
 func getMockTransport(resp string) mockTransport {
 	tr := mockTransport{}
 	tr.response = resp

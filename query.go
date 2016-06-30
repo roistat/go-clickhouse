@@ -1,7 +1,6 @@
 package clickhouse
 
 import (
-	"log"
 	"strings"
 )
 
@@ -12,10 +11,6 @@ type Query struct {
 
 func (q Query) Iter(conn *Conn) *Iter {
 	resp, err := conn.transport.Exec(conn, q, false)
-	if err != nil {
-		return &Iter{err: err}
-	}
-
 	if err != nil {
 		return &Iter{err: err}
 	}
@@ -31,9 +26,7 @@ func (q Query) Iter(conn *Conn) *Iter {
 func (q Query) Exec(conn *Conn) (err error) {
 	resp, err := conn.transport.Exec(conn, q, false)
 	if err == nil {
-		if err == nil {
-			err = errorFromResponse(resp)
-		}
+		err = errorFromResponse(resp)
 	}
 
 	return err
@@ -60,7 +53,7 @@ func (iter *Iter) Scan(vars ...interface{}) bool {
 	for i, v := range vars {
 		err := unmarshal(v, a[i])
 		if err != nil {
-			log.Fatal(err)
+			iter.err = err
 			return false
 		}
 	}

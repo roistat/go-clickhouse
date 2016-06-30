@@ -6,7 +6,29 @@ import (
 )
 
 func TestErrorFromResponse(t *testing.T) {
+	var err *DbError
+
 	assert.NoError(t, errorFromResponse(""))
 	assert.NoError(t, errorFromResponse("Ok."))
-	assert.Error(t, errorFromResponse("Code: 10, Exception: test"))
+
+	err = errorFromResponse("Code: 140, 000000").(*DbError)
+
+	assert.Error(t, err)
+	assert.Equal(t, 140, err.Code())
+	assert.Equal(t, "", err.Message())
+
+
+	err = errorFromResponse("Code: 62, e.displayText() = DB::Exception: Syntax error: failed at end of query.\n"+
+		"Expected identifier, e.what() = DB::Exception").(*DbError)
+
+	assert.Error(t, err)
+	assert.Equal(t, 62, err.Code())
+	assert.Equal(t, "DB::Exception: Syntax error: failed at end of query.\nExpected identifier", err.Message())
+
+	err = errorFromResponse("Code: 3, e.displayText() = DB::Exception: Syntax error: failed at end of query.\n"+
+	"Expected identifier,").(*DbError)
+
+	assert.Error(t, err)
+	assert.Equal(t, 3, err.Code())
+	assert.Equal(t, "DB::Exception: Syntax error: failed at end of query.\nExpected identifier,", err.Message())
 }
