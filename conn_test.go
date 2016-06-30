@@ -3,6 +3,7 @@ package clickhouse
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"errors"
 )
 
 func TestConnect(t *testing.T) {
@@ -23,4 +24,17 @@ func TestConn_Ping(t *testing.T) {
 	tr := getMockTransport("Ok.")
 	conn := NewConn("host.local", tr)
 	assert.NoError(t, conn.Ping())
+}
+
+func TestConn_Ping2(t *testing.T) {
+	tr := getMockTransport("")
+	conn := NewConn("host.local", tr)
+	assert.Error(t, conn.Ping())
+}
+
+func TestConn_Ping3(t *testing.T) {
+	tr := badTransport{err: errors.New("Connection timeout")}
+	conn := NewConn("host.local", tr)
+	assert.Error(t, conn.Ping())
+	assert.Equal(t, "Connection timeout", conn.Ping().Error())
 }

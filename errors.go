@@ -29,7 +29,7 @@ func (e *DbError) Error() string {
 }
 
 func (e *DbError) String() string {
-	return fmt.Sprintf("[error code=%x message=%q]", e.code, e.msg)
+	return fmt.Sprintf("[error code=%d message=%q]", e.code, e.msg)
 }
 
 func errorFromResponse(resp string) error {
