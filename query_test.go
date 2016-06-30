@@ -3,14 +3,40 @@ package clickhouse
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"errors"
 )
 
 type mockTransport struct {
 	response string
 }
 
+type badTransport struct {
+	response string
+	err error
+}
+
 func (m mockTransport) Exec(conn *Conn, q Query, readOnly bool) (r string, err error) {
 	return m.response, nil
+}
+
+func (m badTransport) Exec(conn *Conn, q Query, readOnly bool) (r string, err error) {
+	return "", m.err
+}
+
+func TestQuery_Iter(t *testing.T) {
+	tr := getMockTransport("Code: 62, ")
+	conn := NewConn(getHost(), tr)
+	iter := NewQuery("SELECT 1").Iter(conn)
+	assert.Error(t, iter.Error())
+	assert.Equal(t, 62, iter.Error().(*DbError).Code())
+}
+
+func TestQuery_Iter2(t *testing.T) {
+	tr := badTransport{err: errors.New("No connection")}
+	conn := NewConn(getHost(), tr)
+	iter := NewQuery("SELECT 1").Iter(conn)
+	assert.Error(t, iter.Error())
+	assert.Equal(t, "No connection", iter.Error().Error())
 }
 
 func TestIter_ScanInt(t *testing.T) {

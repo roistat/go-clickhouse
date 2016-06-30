@@ -5,6 +5,11 @@ import (
 	"testing"
 )
 
+func TestNewHttpTransport(t *testing.T) {
+	tr := NewHttpTransport()
+	assert.IsType(t, HttpTransport{}, tr)
+}
+
 func TestNewQuery(t *testing.T) {
 	stmt := "SELECT * FROM table WHERE ?"
 	q := NewQuery(stmt, 1)
