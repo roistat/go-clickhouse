@@ -16,22 +16,22 @@ func TestCheckServers(t *testing.T) {
 	assert.Equal(t, conn1, cl.conn[0])
 	assert.Equal(t, conn2, cl.conn[1])
 
-	cl.OnFail(func(c *Conn) {
+	cl.OnPingError(func(c *Conn) {
 		assert.Equal(t, conn1, c)
 	})
 
-	cl.CheckConnections()
+	cl.Ping()
 
-	assert.Equal(t, conn2, cl.Active())
+	assert.Equal(t, conn2, cl.ActiveConn())
 
 	conn1 = NewConn(getHost(), goodTr)
 	conn2 = NewConn(getHost(), badTr)
-	cl.OnFail(func(c *Conn) {
+	cl.OnPingError(func(c *Conn) {
 		assert.Equal(t, conn2, c)
 	})
 
-	cl.CheckConnections()
+	cl.Ping()
 
-	assert.Equal(t, conn1, cl.Active())
+	assert.Equal(t, conn1, cl.ActiveConn())
 
 }

@@ -5,12 +5,12 @@ import (
 	"sync"
 )
 
-type PingErrorEvent func(*Conn)
+type PingErrorFunc func(*Conn)
 
 type Cluster struct {
 	conn   []*Conn
 	active []*Conn
-	fail   PingErrorEvent
+	fail   PingErrorFunc
 	mx     sync.Mutex
 }
 
@@ -20,11 +20,11 @@ func NewCluster(conn ...*Conn) *Cluster {
 	}
 }
 
-func (c *Cluster) OnFail(f PingErrorEvent) {
+func (c *Cluster) OnPingError(f PingErrorFunc) {
 	c.fail = f
 }
 
-func (c *Cluster) Active() *Conn {
+func (c *Cluster) ActiveConn() *Conn {
 	c.mx.Lock()
 	defer c.mx.Unlock()
 	l := len(c.active)
@@ -34,7 +34,7 @@ func (c *Cluster) Active() *Conn {
 	return c.active[rand.Intn(l)]
 }
 
-func (c *Cluster) CheckConnections() {
+func (c *Cluster) Ping() {
 	var (
 		err error
 		res []*Conn
