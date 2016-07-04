@@ -1,9 +1,9 @@
 package clickhouse
 
 import (
-	"strings"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 type DbError struct {

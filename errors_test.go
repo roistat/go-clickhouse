@@ -17,8 +17,7 @@ func TestErrorFromResponse(t *testing.T) {
 	assert.Equal(t, 140, err.Code())
 	assert.Equal(t, "", err.Message())
 
-
-	err = errorFromResponse("Code: 62, e.displayText() = DB::Exception: Syntax error: failed at end of query.\n"+
+	err = errorFromResponse("Code: 62, e.displayText() = DB::Exception: Syntax error: failed at end of query.\n" +
 		"Expected identifier, e.what() = DB::Exception").(*DbError)
 
 	assert.Error(t, err)

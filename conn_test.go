@@ -1,9 +1,9 @@
 package clickhouse
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"errors"
 )
 
 func TestConnect(t *testing.T) {

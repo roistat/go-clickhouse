@@ -1,6 +1,7 @@
 package clickhouse
 
 import (
+	"errors"
 	"strings"
 )
 
@@ -10,6 +11,9 @@ type Query struct {
 }
 
 func (q Query) Iter(conn *Conn) *Iter {
+	if conn == nil {
+		return &Iter{err: errors.New("Connection pointer is nil")}
+	}
 	resp, err := conn.transport.Exec(conn, q, false)
 	if err != nil {
 		return &Iter{err: err}
@@ -24,6 +28,9 @@ func (q Query) Iter(conn *Conn) *Iter {
 }
 
 func (q Query) Exec(conn *Conn) (err error) {
+	if conn == nil {
+		return errors.New("Connection pointer is nil")
+	}
 	resp, err := conn.transport.Exec(conn, q, false)
 	if err == nil {
 		err = errorFromResponse(resp)

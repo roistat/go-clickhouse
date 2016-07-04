@@ -1,9 +1,9 @@
 package clickhouse
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"errors"
 )
 
 type mockTransport struct {
@@ -12,7 +12,7 @@ type mockTransport struct {
 
 type badTransport struct {
 	response string
-	err error
+	err      error
 }
 
 func (m mockTransport) Exec(conn *Conn, q Query, readOnly bool) (r string, err error) {
@@ -139,6 +139,16 @@ func TestQuery_Exec(t *testing.T) {
 	err = NewQuery("INSERT INTO table VALUES 1").Exec(conn)
 	assert.Error(t, err)
 	assert.Equal(t, 69, err.(*DbError).Code())
+}
+
+func TestQuery_Exec2(t *testing.T) {
+	err := NewQuery("SELECT 1").Exec(nil)
+	assert.Error(t, err)
+}
+
+func TestQuery_Iter3(t *testing.T) {
+	iter := NewQuery("INSERT 1").Iter(nil)
+	assert.Error(t, iter.err)
 }
 
 func getMockTransport(resp string) mockTransport {
