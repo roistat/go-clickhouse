@@ -47,6 +47,12 @@ func marshal(value interface{}) string {
 		return strconv.FormatInt(value.(int64), 10)
 	case string:
 		return fmt.Sprintf("'%s'", value)
+	case []string:
+		var res []string
+		for _, v := range value.([]string) {
+			res = append(res, marshal(v))
+		}
+		return "["+strings.Join(res, ",")+"]"
 	case Array:
 		var res []string
 		for _, v := range value.(Array) {

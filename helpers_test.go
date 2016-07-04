@@ -17,7 +17,7 @@ func TestNewQuery(t *testing.T) {
 	assert.Equal(t, []interface{}{1}, q.args)
 }
 
-func TestNewInsert(t *testing.T) {
+func TestBuildInsert(t *testing.T) {
 	var (
 		q   Query
 		err error
@@ -31,6 +31,18 @@ func TestNewInsert(t *testing.T) {
 	q, err = BuildInsert("test", Columns{"col1", "col2"}, Row{"val1"})
 	assert.Equal(t, "", q.Stmt)
 	assert.Error(t, err)
+}
+
+func TestBuildInsertArray(t *testing.T) {
+	var (
+		q   Query
+		err error
+	)
+
+	q, err = BuildInsert("test", Columns{"col1", "col2"}, Row{"val1", Array{"val2", "val3"}})
+	assert.Equal(t, "INSERT INTO test (col1,col2) VALUES (?,?)", q.Stmt)
+	assert.Equal(t, []interface{}{"val1", Array{"val2", "val3"}}, q.args)
+	assert.NoError(t, err)
 }
 
 func TestNewMultiInsert(t *testing.T) {
