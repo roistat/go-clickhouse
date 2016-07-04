@@ -58,5 +58,7 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "10", marshal(int32(10)))
 	assert.Equal(t, "10", marshal(int64(10)))
 	assert.Equal(t, "'10'", marshal("10"))
+	assert.Equal(t, "[10,20,30]", marshal(Array{10, 20, 30}))
+	assert.Equal(t, "['k10','20','30val']", marshal(Array{"k10", "20", "30val"}))
 	assert.Equal(t, "''", marshal(t))
 }

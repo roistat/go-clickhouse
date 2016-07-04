@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 func unmarshal(value interface{}, data string) (err error) {
@@ -46,6 +47,12 @@ func marshal(value interface{}) string {
 		return strconv.FormatInt(value.(int64), 10)
 	case string:
 		return fmt.Sprintf("'%s'", value)
+	case Array:
+		var res []string
+		for _, v := range value.(Array) {
+			res = append(res, marshal(v))
+		}
+		return "["+strings.Join(res, ",")+"]"
 	}
 
 	return "''"
