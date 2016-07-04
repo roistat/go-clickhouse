@@ -20,6 +20,12 @@ func NewCluster(conn ...*Conn) *Cluster {
 	}
 }
 
+func (c *Cluster) IsDown() bool {
+	c.mx.Lock()
+	defer c.mx.Unlock()
+	return len(c.active) < 1
+}
+
 func (c *Cluster) OnPingError(f PingErrorFunc) {
 	c.fail = f
 }
@@ -50,6 +56,7 @@ func (c *Cluster) Ping() {
 	}
 
 	c.mx.Lock()
+	defer c.mx.Unlock()
+
 	c.active = res
-	c.mx.Unlock()
 }
