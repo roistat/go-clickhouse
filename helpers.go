@@ -11,7 +11,7 @@ type (
 	Columns []string
 	Row     []interface{}
 	Rows    []Row
-	Array	[]interface{}
+	Array   []interface{}
 )
 
 func NewHttpTransport() HttpTransport {

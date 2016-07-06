@@ -24,6 +24,9 @@ func unmarshal(value interface{}, data string) (err error) {
 		*v = int32(m.(int64))
 	case *int64:
 		*v, err = strconv.ParseInt(data, 10, 64)
+	case *float64:
+		m, err = strconv.ParseFloat(data, 64)
+		*v = m.(float64)
 	case *string:
 		*v = data
 	default:
@@ -52,13 +55,13 @@ func marshal(value interface{}) string {
 		for _, v := range value.([]string) {
 			res = append(res, marshal(v))
 		}
-		return "["+strings.Join(res, ",")+"]"
+		return "[" + strings.Join(res, ",") + "]"
 	case Array:
 		var res []string
 		for _, v := range value.(Array) {
 			res = append(res, marshal(v))
 		}
-		return "["+strings.Join(res, ",")+"]"
+		return "[" + strings.Join(res, ",") + "]"
 	}
 
 	return "''"

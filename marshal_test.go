@@ -21,6 +21,7 @@ func TestUnmarshal(t *testing.T) {
 		valInt64       int64
 		valString      string
 		valUnsupported testing.T
+		valFloat64     float64
 	)
 
 	err = unmarshal(&valInt, "10")
@@ -49,6 +50,10 @@ func TestUnmarshal(t *testing.T) {
 
 	err = unmarshal(&valUnsupported, "10")
 	assert.Error(t, err)
+
+	err = unmarshal(&valFloat64, "10")
+	assert.Equal(t, float64(10), valFloat64)
+	assert.NoError(t, err)
 }
 
 func TestMarshal(t *testing.T) {
