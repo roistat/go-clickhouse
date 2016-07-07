@@ -50,6 +50,9 @@ requests to random master to balance load.
 * `cluster.ActiveConn()` returns random active connection
 * `cluster.OnPingError()` is called when any connection fails
 
+**Important**: You should call method `Check()` at least once after initialization, but we recommend
+to call it continuously, so `ActiveConn()` will always return filtered active connection.
+
 ```go
 http := clickhouse.NewHttpTransport()
 conn1 := clickhouse.NewConn("host1", http)
