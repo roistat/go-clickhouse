@@ -48,7 +48,7 @@ requests to random master to balance load.
 
 * `cluster.Check()` pings all connections and filters active ones
 * `cluster.ActiveConn()` returns random active connection
-* `cluster.OnPingError()` is called when any connection fails
+* `cluster.OnCheckError()` is called when any connection fails
 
 **Important**: You should call method `Check()` at least once after initialization, but we recommend
 to call it continuously, so `ActiveConn()` will always return filtered active connection.

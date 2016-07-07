@@ -26,7 +26,7 @@ func (c *Cluster) IsDown() bool {
 	return len(c.active) < 1
 }
 
-func (c *Cluster) OnPingError(f PingErrorFunc) {
+func (c *Cluster) OnCheckError(f PingErrorFunc) {
 	c.fail = f
 }
 
