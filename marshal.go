@@ -7,6 +7,16 @@ import (
 	"strings"
 )
 
+func escape(s string) string {
+	s = strings.Replace(s, "'", "\\'", -1)
+	return s
+}
+
+func unescape(s string) string {
+	s = strings.Replace(s, "\\'", "'", -1)
+	return s
+}
+
 func unmarshal(value interface{}, data string) (err error) {
 	var m interface{}
 	switch v := value.(type) {
@@ -28,7 +38,7 @@ func unmarshal(value interface{}, data string) (err error) {
 		m, err = strconv.ParseFloat(data, 64)
 		*v = m.(float64)
 	case *string:
-		*v = data
+		*v = unescape(data)
 	default:
 		return errors.New(fmt.Sprintf("Type %T is not supported for unmarshaling", v))
 	}
@@ -49,7 +59,7 @@ func marshal(value interface{}) string {
 	case int64:
 		return strconv.FormatInt(value.(int64), 10)
 	case string:
-		return fmt.Sprintf("'%s'", value)
+		return "'"+escape(value.(string))+"'"
 	case []string:
 		var res []string
 		for _, v := range value.([]string) {

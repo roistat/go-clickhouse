@@ -48,6 +48,10 @@ func TestUnmarshal(t *testing.T) {
 	assert.Equal(t, "10", valString)
 	assert.NoError(t, err)
 
+	err = unmarshal(&valString, "String1\\'")
+	assert.Equal(t, "String1'", valString)
+	assert.NoError(t, err)
+
 	err = unmarshal(&valUnsupported, "10")
 	assert.Error(t, err)
 
@@ -63,6 +67,8 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "10", marshal(int32(10)))
 	assert.Equal(t, "10", marshal(int64(10)))
 	assert.Equal(t, "'10'", marshal("10"))
+	assert.Equal(t, "'String1\\''", marshal("String1'"))
+	assert.Equal(t, "'String\r'", marshal("String\r"))
 	assert.Equal(t, "[10,20,30]", marshal(Array{10, 20, 30}))
 	assert.Equal(t, "['k10','20','30val']", marshal(Array{"k10", "20", "30val"}))
 	assert.Equal(t, "['k10','20','30val']", marshal([]string{"k10", "20", "30val"}))
