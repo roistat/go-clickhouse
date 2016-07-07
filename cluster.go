@@ -40,7 +40,7 @@ func (c *Cluster) ActiveConn() *Conn {
 	return c.active[rand.Intn(l)]
 }
 
-func (c *Cluster) Ping() {
+func (c *Cluster) Check() {
 	var (
 		err error
 		res []*Conn

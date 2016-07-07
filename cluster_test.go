@@ -22,7 +22,7 @@ func TestPing(t *testing.T) {
 		assert.Equal(t, conn1, c)
 	})
 
-	cl.Ping()
+	cl.Check()
 
 	assert.Equal(t, conn2.Host, cl.ActiveConn().Host)
 
@@ -35,7 +35,7 @@ func TestPing(t *testing.T) {
 		assert.Equal(t, conn2.Host, c.Host)
 	})
 
-	cl.Ping()
+	cl.Check()
 
 	assert.Equal(t, conn1.Host, cl.ActiveConn().Host)
 
@@ -43,7 +43,7 @@ func TestPing(t *testing.T) {
 	cl.conn[1] = NewConn("host2", badTr)
 
 	cl.OnPingError(func(c *Conn) {})
-	cl.Ping()
+	cl.Check()
 
 	assert.Nil(t, cl.ActiveConn())
 

@@ -41,10 +41,14 @@ if err != nil {
 }
 ```
 
-#### Multiple connections
+## Cluster
 
-Cluster pings connections so you can use `cluster.ActiveConn()` to get random active connection. It might
-be useful when you use several `Distributed` tables.
+Cluster is useful if you have several servers with same `Distributed` table (master). In this case you can send
+requests to random master to balance load.
+
+* `cluster.Check()` pings all connections and filters active ones
+* `cluster.ActiveConn()` returns random active connection
+* `cluster.OnPingError()` is called when any connection fails
 
 ```go
 http := clickhouse.NewHttpTransport()
@@ -56,7 +60,7 @@ cluster := clickhouse.NewCluster(conn1, conn2)
 // Ping connections every second
 go func() {
     for {
-        cluster.Ping()
+        cluster.Check()
         time.Sleep(time.Second)
     }
 }()
