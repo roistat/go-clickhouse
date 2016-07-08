@@ -33,10 +33,10 @@ query, err := clickhouse.BuildInsert("clicks",
     clickhouse.Columns{"name", "date"},
     clickhouse.Row{"Test name", "2016-01-01 21:01:01"},
 )
-if err != nil {
+if err == nil {
     err = query.Exec(conn)
-    if err != nil {
-        // Success
+    if err == nil {
+        //
     }
 }
 ```
