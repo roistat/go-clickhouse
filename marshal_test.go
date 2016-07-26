@@ -1,8 +1,9 @@
 package clickhouse
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func BenchmarkMarshalString(b *testing.B) {
@@ -22,6 +23,9 @@ func TestUnmarshal(t *testing.T) {
 		valString      string
 		valUnsupported testing.T
 		valFloat64     float64
+		valArrayString []string
+		valArrayInt    []int
+		valArray       Array
 	)
 
 	err = unmarshal(&valInt, "10")
@@ -58,6 +62,22 @@ func TestUnmarshal(t *testing.T) {
 	err = unmarshal(&valFloat64, "10")
 	assert.Equal(t, float64(10), valFloat64)
 	assert.NoError(t, err)
+
+	err = unmarshal(&valArrayString, "['k10','20']")
+	assert.Equal(t, []string{"k10", "20"}, valArrayString)
+	assert.NoError(t, err)
+
+	err = unmarshal(&valArrayInt, "[10,20]")
+	assert.Equal(t, []int{10, 20}, valArrayInt)
+	assert.NoError(t, err)
+
+	err = unmarshal(&valArray, "['k10','20']")
+	assert.Equal(t, Array{"k10", "20"}, valArray)
+	assert.NoError(t, err)
+
+	err = unmarshal(&valArray, "[10,20]")
+	assert.Equal(t, Array{10, 20}, valArray)
+	assert.NoError(t, err)
 }
 
 func TestMarshal(t *testing.T) {
@@ -72,5 +92,6 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "[10,20,30]", marshal(Array{10, 20, 30}))
 	assert.Equal(t, "['k10','20','30val']", marshal(Array{"k10", "20", "30val"}))
 	assert.Equal(t, "['k10','20','30val']", marshal([]string{"k10", "20", "30val"}))
+	assert.Equal(t, "[10,20,30]", marshal([]int{10, 20, 30}))
 	assert.Equal(t, "''", marshal(t))
 }
