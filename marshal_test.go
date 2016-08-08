@@ -66,6 +66,10 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "10", marshal(int16(10)))
 	assert.Equal(t, "10", marshal(int32(10)))
 	assert.Equal(t, "10", marshal(int64(10)))
+
+	assert.Equal(t, "3.141592", 	marshal(float32(3.141592)))
+	assert.Equal(t, "3.1415926535", marshal(float64(3.1415926535)))
+
 	assert.Equal(t, "'10'", marshal("10"))
 	assert.Equal(t, "'String1\\''", marshal("String1'"))
 	assert.Equal(t, "'String\r'", marshal("String\r"))
