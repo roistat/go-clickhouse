@@ -72,8 +72,22 @@ func TestUnmarshal(t *testing.T) {
 	assert.Equal(t, []string{"k10", "20"}, valArrayString)
 	assert.NoError(t, err)
 
+	err = unmarshal(&valArrayString, "")
+	assert.Error(t, err, "Column data is not of type []string")
+
+	err = unmarshal(&valArrayString, "[]")
+	assert.Equal(t, []string{}, valArrayString)
+	assert.NoError(t, err)
+
 	err = unmarshal(&valArrayInt, "[10,20]")
 	assert.Equal(t, []int{10, 20}, valArrayInt)
+	assert.NoError(t, err)
+
+	err = unmarshal(&valArrayInt, "")
+	assert.Error(t, err, "Column data is not of type []int")
+
+	err = unmarshal(&valArrayInt, "[]")
+	assert.Equal(t, []int{}, valArrayInt)
 	assert.NoError(t, err)
 
 	err = unmarshal(&valArray, "['k10','20']")
@@ -82,6 +96,17 @@ func TestUnmarshal(t *testing.T) {
 
 	err = unmarshal(&valArray, "[10,20]")
 	assert.Equal(t, Array{10, 20}, valArray)
+	assert.NoError(t, err)
+
+	err = unmarshal(&valArray, "[3.14,5.25]")
+	assert.Equal(t, Array{3.14, 5.25}, valArray)
+	assert.NoError(t, err)
+
+	err = unmarshal(&valArray, "")
+	assert.Error(t, err, "Column data is not of type Array")
+
+	err = unmarshal(&valArray, "[]")
+	assert.Equal(t, Array{}, valArray)
 	assert.NoError(t, err)
 }
 

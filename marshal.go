@@ -53,7 +53,7 @@ func unmarshal(value interface{}, data string) (err error) {
 		*v = unescape(data)
 	case *[]int:
 		if !isArray(data) {
-			return fmt.Errorf("Column data is not of type %T", v)
+			return fmt.Errorf("Column data is not of type []int")
 		}
 		if isEmptyArray(data) {
 			*v = []int{}
@@ -69,7 +69,7 @@ func unmarshal(value interface{}, data string) (err error) {
 		*v = res
 	case *[]string:
 		if !isArray(data) {
-			return fmt.Errorf("Column data is not of type %T", v)
+			return fmt.Errorf("Column data is not of type []string")
 		}
 		if isEmptyArray(data) {
 			*v = []string{}
@@ -87,7 +87,7 @@ func unmarshal(value interface{}, data string) (err error) {
 		*v = res
 	case *Array:
 		if !isArray(data) {
-			return fmt.Errorf("Column data is not of type %T", v)
+			return fmt.Errorf("Column data is not of type Array")
 		}
 		if isEmptyArray(data) {
 			*v = Array{}
