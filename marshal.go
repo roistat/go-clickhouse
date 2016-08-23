@@ -43,6 +43,9 @@ func unmarshal(value interface{}, data string) (err error) {
 		*v = int32(m.(int64))
 	case *int64:
 		*v, err = strconv.ParseInt(data, 10, 64)
+	case *float32:
+		m, err = strconv.ParseFloat(data, 32)
+		*v = float32(m.(float64))
 	case *float64:
 		m, err = strconv.ParseFloat(data, 64)
 		*v = m.(float64)
@@ -138,6 +141,7 @@ func unmarshal(value interface{}, data string) (err error) {
 
 func marshal(value interface{}) string {
 	switch value.(type) {
+
 	case int:
 		return strconv.Itoa(value.(int))
 	case int8:
@@ -148,6 +152,8 @@ func marshal(value interface{}) string {
 		return strconv.FormatInt(int64(value.(int32)), 10)
 	case int64:
 		return strconv.FormatInt(value.(int64), 10)
+	case float32:
+		return strconv.FormatFloat(float64(value.(float32)), 'f', -1, 32)
 	case float64:
 		return strconv.FormatFloat(value.(float64), 'f', -1, 64)
 	case string:

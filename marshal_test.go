@@ -22,6 +22,7 @@ func TestUnmarshal(t *testing.T) {
 		valInt64       int64
 		valString      string
 		valUnsupported testing.T
+		valFloat32     float32
 		valFloat64     float64
 		valArrayString []string
 		valArrayInt    []int
@@ -59,8 +60,12 @@ func TestUnmarshal(t *testing.T) {
 	err = unmarshal(&valUnsupported, "10")
 	assert.Error(t, err)
 
-	err = unmarshal(&valFloat64, "10")
-	assert.Equal(t, float64(10), valFloat64)
+	err = unmarshal(&valFloat32, "3.141592")
+	assert.Equal(t, float32(3.141592), valFloat32)
+	assert.NoError(t, err)
+
+	err = unmarshal(&valFloat64, "3.1415926535")
+	assert.Equal(t, float64(3.1415926535), valFloat64)
 	assert.NoError(t, err)
 
 	err = unmarshal(&valArrayString, "['k10','20']")
@@ -86,6 +91,10 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "10", marshal(int16(10)))
 	assert.Equal(t, "10", marshal(int32(10)))
 	assert.Equal(t, "10", marshal(int64(10)))
+
+	assert.Equal(t, "3.141592", marshal(float32(3.141592)))
+	assert.Equal(t, "3.1415926535", marshal(float64(3.1415926535)))
+
 	assert.Equal(t, "'10'", marshal("10"))
 	assert.Equal(t, "'String1\\''", marshal("String1'"))
 	assert.Equal(t, "'String\r'", marshal("String\r"))
