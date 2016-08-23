@@ -26,6 +26,10 @@ func isEmptyArray(s string) bool {
 	return s == "[]"
 }
 
+func splitStringToItems(s string) []string {
+	return strings.Split(string(s[1:len(s)-1]), ",")
+}
+
 func unmarshal(value interface{}, data string) (err error) {
 	var m interface{}
 	switch v := value.(type) {
@@ -60,7 +64,7 @@ func unmarshal(value interface{}, data string) (err error) {
 			return
 		}
 
-		items := strings.Split(string(data[1:len(data)-1]), ",")
+		items := splitStringToItems(data)
 		res := make([]int, len(items))
 		for i := 0; i < len(items); i++ {
 			unmarshal(&res[i], items[i])
@@ -76,7 +80,7 @@ func unmarshal(value interface{}, data string) (err error) {
 			return
 		}
 
-		items := strings.Split(string(data[1:len(data)-1]), ",")
+		items := splitStringToItems(data)
 		res := make([]string, len(items))
 		for i := 0; i < len(items); i++ {
 			var s string
@@ -94,7 +98,7 @@ func unmarshal(value interface{}, data string) (err error) {
 			return
 		}
 
-		items := strings.Split(string(data[1:len(data)-1]), ",")
+		items := splitStringToItems(data)
 		res := make(Array, len(items))
 
 		var intval int
