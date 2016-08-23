@@ -1,4 +1,4 @@
-# go-clickhouse [![Travis status](https://img.shields.io/travis/roistat/go-clickhouse.svg)](https://travis-ci.org/roistat/go-clickhouse) [![Coverage Status](https://img.shields.io/coveralls/roistat/go-clickhouse.svg)](https://coveralls.io/github/roistat/go-clickhouse) ![](https://img.shields.io/github/license/roistat/go-clickhouse.svg)
+# go-clickhouse [![Travis status](https://img.shields.io/travis/roistat/go-clickhouse.svg)](https://travis-ci.org/roistat/go-clickhouse) [![Coverage Status](https://img.shields.io/coveralls/roistat/go-clickhouse.svg)](https://coveralls.io/github/roistat/go-clickhouse) ![](https://goreportcard.com/badge/github.com/roistat/go-clickhouse) ![](https://img.shields.io/github/license/roistat/go-clickhouse.svg)
 
 Golang [Yandex ClickHouse](https://clickhouse.yandex/) connector
 

@@ -1,7 +1,6 @@
 package clickhouse
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -20,7 +19,7 @@ func (c *Conn) Ping() (err error) {
 	res, err = c.transport.Exec(c, Query{Stmt: ""}, true)
 	if err == nil {
 		if !strings.Contains(res, successTestResponse) {
-			err = errors.New(fmt.Sprintf("Clickhouse host response was '%s', expected '%s'.", res, successTestResponse))
+			err = fmt.Errorf("Clickhouse host response was '%s', expected '%s'.", res, successTestResponse)
 		}
 	}
 

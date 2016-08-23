@@ -22,9 +22,9 @@ func (q Query) Iter(conn *Conn) *Iter {
 	err = errorFromResponse(resp)
 	if err != nil {
 		return &Iter{err: err}
-	} else {
-		return &Iter{text: resp}
 	}
+
+	return &Iter{text: resp}
 }
 
 func (q Query) Exec(conn *Conn) (err error) {
@@ -48,8 +48,8 @@ func (r *Iter) Error() error {
 	return r.err
 }
 
-func (iter *Iter) Scan(vars ...interface{}) bool {
-	row := iter.fetchNext()
+func (r *Iter) Scan(vars ...interface{}) bool {
+	row := r.fetchNext()
 	if len(row) == 0 {
 		return false
 	}
@@ -60,7 +60,7 @@ func (iter *Iter) Scan(vars ...interface{}) bool {
 	for i, v := range vars {
 		err := unmarshal(v, a[i])
 		if err != nil {
-			iter.err = err
+			r.err = err
 			return false
 		}
 	}
