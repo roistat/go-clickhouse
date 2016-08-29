@@ -2,6 +2,7 @@ package clickhouse
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -147,43 +148,21 @@ func unmarshal(value interface{}, data string) (err error) {
 }
 
 func marshal(value interface{}) string {
-	switch value.(type) {
-
-	case int:
-		return strconv.Itoa(value.(int))
-	case int8:
-		return strconv.FormatInt(int64(value.(int8)), 10)
-	case int16:
-		return strconv.FormatInt(int64(value.(int16)), 10)
-	case int32:
-		return strconv.FormatInt(int64(value.(int32)), 10)
-	case int64:
-		return strconv.FormatInt(value.(int64), 10)
-	case float32:
-		return strconv.FormatFloat(float64(value.(float32)), 'f', -1, 32)
-	case float64:
-		return strconv.FormatFloat(value.(float64), 'f', -1, 64)
-	case string:
-		return "'" + escape(value.(string)) + "'"
-	case []int:
+	if reflect.TypeOf(value).Kind() == reflect.Slice {
 		var res []string
-		for _, v := range value.([]int) {
-			res = append(res, marshal(v))
-		}
-		return "[" + strings.Join(res, ",") + "]"
-	case []string:
-		var res []string
-		for _, v := range value.([]string) {
-			res = append(res, marshal(v))
-		}
-		return "[" + strings.Join(res, ",") + "]"
-	case Array:
-		var res []string
-		for _, v := range value.(Array) {
-			res = append(res, marshal(v))
+		v := reflect.ValueOf(value)
+		for i := 0; i < v.Len(); i++ {
+			res = append(res, marshal(v.Index(i).Interface()))
 		}
 		return "[" + strings.Join(res, ",") + "]"
 	}
-
+	switch v := value.(type) {
+	case string:
+		return fmt.Sprintf("'%s'", strings.Replace(v, "'", "\\'", -1))
+	case int, int8, int16, int32, int64,
+		uint, uint8, uint16, uint32, uint64,
+		float32, float64:
+		return fmt.Sprintf("%v", v)
+	}
 	return "''"
 }
