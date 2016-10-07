@@ -1,9 +1,9 @@
 package clickhouse
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
+	"time"
 )
 
 func BenchmarkMarshalString(b *testing.B) {
@@ -21,6 +21,7 @@ func TestUnmarshal(t *testing.T) {
 		valInt32       int32
 		valInt64       int64
 		valString      string
+		valTime        time.Time
 		valUnsupported testing.T
 		valFloat32     float32
 		valFloat64     float64
@@ -55,6 +56,10 @@ func TestUnmarshal(t *testing.T) {
 
 	err = unmarshal(&valString, "String1\\'")
 	assert.Equal(t, "String1'", valString)
+	assert.NoError(t, err)
+
+	err = unmarshal(&valTime, "2016-10-07 19:21:17")
+	assert.Equal(t, time.Date(2016, 10, 7, 19, 21, 17, 0, time.UTC), valTime)
 	assert.NoError(t, err)
 
 	err = unmarshal(&valUnsupported, "10")
