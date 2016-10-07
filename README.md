@@ -42,6 +42,26 @@ if err == nil {
 }
 ```
 
+#### External data for query processing
+
+[See documentation for details](https://clickhouse.yandex/reference_en.html#External%20data%20for%20query%20processing) 
+
+```go
+conn := clickhouse.NewConn("localhost:8123", clickhouse.NewHttpTransport())
+query := clickhouse.NewQuery("SELECT Num, Name FROM extdata")
+query.AddExternal("extdata", "Num UInt32, Name String", []byte("1	first\n2	second")) // tab separated
+
+
+iter := query.Iter(conn)
+var (
+    num  int
+    name string
+)
+for iter.Scan(&num, &name) {
+    //
+}
+```
+
 ## Cluster
 
 Cluster is useful if you have several servers with same `Distributed` table (master). In this case you can send

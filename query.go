@@ -5,9 +5,20 @@ import (
 	"strings"
 )
 
+type External struct {
+	Name      string
+	Structure string
+	Data      []byte
+}
+
 type Query struct {
-	Stmt string
-	args []interface{}
+	Stmt      string
+	args      []interface{}
+	externals []External
+}
+
+func (q *Query) AddExternal(name string, structure string, data []byte) {
+	q.externals = append(q.externals, External{Name: name, Structure: structure, Data: data})
 }
 
 func (q Query) Iter(conn *Conn) *Iter {
