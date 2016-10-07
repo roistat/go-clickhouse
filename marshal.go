@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func unescape(s string) string {
@@ -50,6 +51,8 @@ func unmarshal(value interface{}, data string) (err error) {
 		*v = m.(float64)
 	case *string:
 		*v = unescape(data)
+	case *time.Time:
+		*v, err = time.ParseInLocation("2006-01-02 15:04:05", data, time.UTC)
 	case *[]int:
 		if !isArray(data) {
 			//noinspection GoPlaceholderCount
