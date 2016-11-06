@@ -128,9 +128,12 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "'10'", marshal("10"))
 	assert.Equal(t, "'String1\\''", marshal("String1'"))
 	assert.Equal(t, "'String\r'", marshal("String\r"))
+	assert.Equal(t, "'String\r'", marshal("String\r"))
+	assert.Equal(t, `'String\\'`, marshal(`String\`))
 	assert.Equal(t, "[10,20,30]", marshal(Array{10, 20, 30}))
 	assert.Equal(t, "['k10','20','30val']", marshal(Array{"k10", "20", "30val"}))
 	assert.Equal(t, "['k10','20','30val']", marshal([]string{"k10", "20", "30val"}))
+	assert.Equal(t, "['k10','20','30val\\\\']", marshal([]string{"k10", "20", "30val\\"}))
 	assert.Equal(t, "[10,20,30]", marshal([]int{10, 20, 30}))
 	assert.Equal(t, "''", marshal(t))
 }
