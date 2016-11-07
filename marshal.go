@@ -8,9 +8,15 @@ import (
 	"time"
 )
 
+func escape(s string) string {
+	s = strings.Replace(s, `\`, `\\`, -1)
+	s = strings.Replace(s, `'`, `\'`, -1)
+	return s
+}
+
 func unescape(s string) string {
-	s = strings.Replace(s, "\\\\", "\\", -1)
-	s = strings.Replace(s, "\\'", "'", -1)
+	s = strings.Replace(s, `\\`, `\`, -1)
+	s = strings.Replace(s, `\'`, `'`, -1)
 	return s
 }
 
@@ -155,7 +161,7 @@ func marshal(value interface{}) string {
 	}
 	switch v := value.(type) {
 	case string:
-		return fmt.Sprintf("'%s'", strings.Replace(v, "'", "\\'", -1))
+		return fmt.Sprintf("'%s'", escape(v))
 	case int, int8, int16, int32, int64,
 		uint, uint8, uint16, uint32, uint64,
 		float32, float64:
