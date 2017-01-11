@@ -20,7 +20,7 @@ func NewHttpTransport() HttpTransport {
 
 func NewConn(host string, t Transport) *Conn {
 	if strings.Index(host, "http://") < 0 && strings.Index(host, "https://") < 0 {
-		host = "http://" + strings.Replace(host, "http://", "", 1)
+		host = "http://" + host
 	}
 	host = strings.TrimRight(host, "/") + "/"
 

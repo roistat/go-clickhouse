@@ -16,6 +16,9 @@ func TestConnect(t *testing.T) {
 	conn = NewConn("http://host.local/", tr)
 	assert.Equal(t, "http://host.local/", conn.Host)
 
+	conn = NewConn("https://host.local/", tr)
+	assert.Equal(t, "https://host.local/", conn.Host)
+
 	conn = NewConn("http:/host.local", tr)
 	assert.Equal(t, "http://http:/host.local/", conn.Host)
 }
