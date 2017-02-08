@@ -81,7 +81,7 @@ conn2 := clickhouse.NewConn("host2", http)
 
 cluster := clickhouse.NewCluster(conn1, conn2)
 cluster.OnCheckError(func (c *clickhouse.Conn) {
-		log.Fatalf("Clickhouse connection failed %s", c.Host)
+    log.Fatalf("Clickhouse connection failed %s", c.Host)
 })
 // Ping connections every second
 go func() {
@@ -90,4 +90,15 @@ go func() {
         time.Sleep(time.Second)
     }
 }()
+```
+
+## Transport options
+
+### Timeout
+
+```go
+t := clickhouse.NewHttpTransport()
+t.Timeout = time.Second * 5
+
+conn := clickhouse.NewConn("host", t)
 ```
