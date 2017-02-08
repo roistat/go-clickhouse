@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 const (
@@ -16,16 +17,19 @@ type Transport interface {
 	Exec(conn *Conn, q Query, readOnly bool) (res string, err error)
 }
 
-type HttpTransport struct{}
+type HttpTransport struct {
+	Timeout time.Duration
+}
 
 func (t HttpTransport) Exec(conn *Conn, q Query, readOnly bool) (res string, err error) {
 	var resp *http.Response
 	query := prepareHttp(q.Stmt, q.args)
+	client := &http.Client{Timeout: t.Timeout}
 	if readOnly {
 		if len(query) > 0 {
 			query = "?query=" + query
 		}
-		resp, err = http.Get(conn.Host + query)
+		resp, err = client.Get(conn.Host + query)
 	} else {
 		var req *http.Request
 		req, err = prepareExecPostRequest(conn.Host, q)
@@ -33,7 +37,6 @@ func (t HttpTransport) Exec(conn *Conn, q Query, readOnly bool) (res string, err
 			return "", err
 		}
 
-		client := &http.Client{}
 		resp, err = client.Do(req)
 	}
 	if err != nil {

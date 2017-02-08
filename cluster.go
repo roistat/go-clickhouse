@@ -51,7 +51,9 @@ func (c *Cluster) Check() {
 		if err == nil {
 			res = append(res, conn)
 		} else {
-			c.fail(conn)
+			if c.fail != nil {
+				c.fail(conn)
+			}
 		}
 	}
 
