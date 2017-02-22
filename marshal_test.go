@@ -135,5 +135,7 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "['k10','20','30val']", marshal([]string{"k10", "20", "30val"}))
 	assert.Equal(t, "['k10','20','30val\\\\']", marshal([]string{"k10", "20", "30val\\"}))
 	assert.Equal(t, "[10,20,30]", marshal([]int{10, 20, 30}))
+	assert.Equal(t, "IPv4StringToNum('192.0.2.128')", marshal(Func{"IPv4StringToNum", "192.0.2.128"}))
+	assert.Equal(t, "IPv4NumToString(3221225985)", marshal(Func{"IPv4NumToString", 3221225985}))
 	assert.Equal(t, "''", marshal(t))
 }

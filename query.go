@@ -11,6 +11,11 @@ type External struct {
 	Data      []byte
 }
 
+type Func struct {
+	Name string
+	Args interface{}
+}
+
 type Query struct {
 	Stmt      string
 	args      []interface{}

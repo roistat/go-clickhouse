@@ -159,6 +159,9 @@ func marshal(value interface{}) string {
 		}
 		return "[" + strings.Join(res, ",") + "]"
 	}
+	if t := reflect.TypeOf(value); t.Kind() == reflect.Struct && strings.HasSuffix(t.String(), "Func") {
+		return fmt.Sprintf("%s(%v)", value.(Func).Name, marshal(value.(Func).Args))
+	}
 	switch v := value.(type) {
 	case string:
 		return fmt.Sprintf("'%s'", escape(v))
