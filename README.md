@@ -31,8 +31,8 @@ for iter.Scan(&name, &date) {
 ```go
 conn := clickhouse.NewConn("localhost:8123", clickhouse.NewHttpTransport())
 query, err := clickhouse.BuildInsert("clicks",
-    clickhouse.Columns{"name", "date"},
-    clickhouse.Row{"Test name", "2016-01-01 21:01:01"},
+    clickhouse.Columns{"name", "date", "sourceip"},
+    clickhouse.Row{"Test name", "2016-01-01 21:01:01", clickhouse.FuncHandle{Func:"IPv4StringToNum", Data:"192.0.2.192"}},
 )
 if err == nil {
     err = query.Exec(conn)

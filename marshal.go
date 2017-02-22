@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+type FuncHandle struct {
+	Func string
+	Data interface{}
+}
+
 func escape(s string) string {
 	s = strings.Replace(s, `\`, `\\`, -1)
 	s = strings.Replace(s, `'`, `\'`, -1)
@@ -158,6 +163,9 @@ func marshal(value interface{}) string {
 			res = append(res, marshal(v.Index(i).Interface()))
 		}
 		return "[" + strings.Join(res, ",") + "]"
+	}
+	if t := reflect.TypeOf(value); t.Kind() == reflect.Struct && strings.HasSuffix(t.String(), "FuncHandle") {
+		return fmt.Sprintf("%s(%v)", value.(FuncHandle).Func, marshal(value.(FuncHandle).Data))
 	}
 	switch v := value.(type) {
 	case string:
