@@ -25,6 +25,9 @@ var (
 for iter.Scan(&name, &date) {
     //
 }
+if iter.Error() != nil {
+    log.Panicln(iter.Error())
+}
 ```
 
 #### Single insert
@@ -59,6 +62,9 @@ var (
 )
 for iter.Scan(&num, &name) {
     //
+}
+if iter.Error() != nil {
+    log.Panicln(iter.Error())
 }
 ```
 
