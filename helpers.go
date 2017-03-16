@@ -48,7 +48,7 @@ func BuildMultiInsert(tbl string, cols Columns, rows Rows) (Query, error) {
 	)
 
 	if len(cols) == 0 || len(rows) == 0 {
-		return Query{}, errors.New("Rows and Cols can't be empty")
+		return Query{}, errors.New("rows and cols cannot be empty")
 	}
 
 	colCount := len(cols)
