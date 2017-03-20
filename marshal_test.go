@@ -122,6 +122,9 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "10", marshal(int32(10)))
 	assert.Equal(t, "10", marshal(int64(10)))
 
+	assert.Equal(t, "1", marshal(true))
+	assert.Equal(t, "0", marshal(false))
+
 	assert.Equal(t, "3.141592", marshal(float32(3.141592)))
 	assert.Equal(t, "3.1415926535", marshal(float64(3.1415926535)))
 

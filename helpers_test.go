@@ -65,6 +65,11 @@ func TestNewMultiInsert(t *testing.T) {
 	})
 	assert.Equal(t, "", q.Stmt)
 	assert.Error(t, err)
+
+	//Test empty insert
+	q, err = BuildMultiInsert("test", Columns{}, Rows{})
+	assert.Equal(t, "", q.Stmt)
+	assert.Error(t, err)
 }
 
 func BenchmarkNewInsert(b *testing.B) {

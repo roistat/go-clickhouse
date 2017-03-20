@@ -47,10 +47,15 @@ func BuildMultiInsert(tbl string, cols Columns, rows Rows) (Query, error) {
 		args []interface{}
 	)
 
+	if len(cols) == 0 || len(rows) == 0 {
+		return Query{}, errors.New("rows and cols cannot be empty")
+	}
+
 	colCount := len(cols)
 	rowCount := len(rows)
 	args = make([]interface{}, colCount*rowCount)
 	argi := 0
+
 	for _, row := range rows {
 		if len(row) != colCount {
 			return Query{}, errors.New("Amount of row items does not match column count")
