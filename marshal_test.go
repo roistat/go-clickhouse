@@ -141,4 +141,5 @@ func TestMarshal(t *testing.T) {
 	assert.Equal(t, "IPv4StringToNum('192.0.2.128')", marshal(Func{"IPv4StringToNum", "192.0.2.128"}))
 	assert.Equal(t, "IPv4NumToString(3221225985)", marshal(Func{"IPv4NumToString", 3221225985}))
 	assert.Equal(t, "''", marshal(t))
+	assert.Equal(t, "2017-04-10", marshal(time.Date(2017, 04, 10, 0, 0, 0, 0, time.UTC)))
 }
