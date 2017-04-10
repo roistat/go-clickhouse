@@ -175,6 +175,9 @@ func marshal(value interface{}) string {
 			return "1"
 		}
 		return "0"
+	//Convert time to Date type https://clickhouse.yandex/reference_en.html#Date
+	case time.Time:
+		return value.(time.Time).Format("2006-01-02")
 	}
 
 	return "''"
