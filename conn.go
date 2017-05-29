@@ -12,6 +12,7 @@ const (
 type Conn struct {
 	Host      string
 	transport Transport
+	db        string
 }
 
 func (c *Conn) Ping() (err error) {

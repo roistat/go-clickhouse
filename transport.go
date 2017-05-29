@@ -27,12 +27,12 @@ func (t HttpTransport) Exec(conn *Conn, q Query, readOnly bool) (res string, err
 	client := &http.Client{Timeout: t.Timeout}
 	if readOnly {
 		if len(query) > 0 {
-			query = "?query=" + query
+			query = getDb(conn) + "query=" + query
 		}
 		resp, err = client.Get(conn.Host + query)
 	} else {
 		var req *http.Request
-		req, err = prepareExecPostRequest(conn.Host, q)
+		req, err = prepareExecPostRequest(conn, q)
 		if err != nil {
 			return "", err
 		}
@@ -49,13 +49,21 @@ func (t HttpTransport) Exec(conn *Conn, q Query, readOnly bool) (res string, err
 	return buf.String(), err
 }
 
-func prepareExecPostRequest(host string, q Query) (*http.Request, error) {
+func getDb(conn *Conn) string {
+	if conn.db == "" {
+		return "?"
+	} else {
+		return "?database=" + conn.db
+	}
+}
+
+func prepareExecPostRequest(conn *Conn, q Query) (*http.Request, error) {
 	query := prepareHttp(q.Stmt, q.args)
 	var req *http.Request
 	var err error = nil
 	if len(q.externals) > 0 {
 		if len(query) > 0 {
-			query = "?query=" + url.QueryEscape(query)
+			query = getDb(conn) + "query=" + url.QueryEscape(query)
 		}
 
 		body := &bytes.Buffer{}
@@ -78,13 +86,13 @@ func prepareExecPostRequest(host string, q Query) (*http.Request, error) {
 			return nil, err
 		}
 
-		req, err = http.NewRequest("POST", host+query, body)
+		req, err = http.NewRequest("POST", conn.Host + query, body)
 		if err != nil {
 			return nil, err
 		}
 		req.Header.Set("Content-Type", writer.FormDataContentType())
 	} else {
-		req, err = http.NewRequest("POST", host, strings.NewReader(query))
+		req, err = http.NewRequest("POST", conn.Host + getDb(conn), strings.NewReader(query))
 		if err != nil {
 			return nil, err
 		}

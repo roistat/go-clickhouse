@@ -64,8 +64,10 @@ func TestPrepareHttpArray(t *testing.T) {
 }
 
 func TestPrepareExecPostRequest(t *testing.T) {
+	transport := HttpTransport{}
+	conn := Conn{Host: "localhost:8123", transport: transport}
 	q := NewQuery("SELECT * FROM testdata")
-	req, err := prepareExecPostRequest("127.0.0.0:8123", q)
+	req, err := prepareExecPostRequest(&conn, q)
 	assert.Equal(t, nil, err)
 	data, err := ioutil.ReadAll(req.Body)
 	assert.Equal(t, nil, err)
@@ -73,11 +75,13 @@ func TestPrepareExecPostRequest(t *testing.T) {
 }
 
 func TestPrepareExecPostRequestWithExternalData(t *testing.T) {
+	transport := HttpTransport{}
+	conn := Conn{Host: "localhost:8123", transport: transport}
 	q := NewQuery("SELECT * FROM testdata")
 	q.AddExternal("data1", "ID String, Num UInt32", []byte("Hello\t22\nHi\t44"))
 	q.AddExternal("extdata", "Num UInt32, Name String", []byte("1	first\n2	second"))
 
-	req, err := prepareExecPostRequest("127.0.0.0:8123", q)
+	req, err := prepareExecPostRequest(&conn, q)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, "SELECT * FROM testdata", req.URL.Query().Get("query"))
 	assert.Equal(t, "ID String, Num UInt32", req.URL.Query().Get("data1_structure"))

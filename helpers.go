@@ -19,6 +19,10 @@ func NewHttpTransport() HttpTransport {
 }
 
 func NewConn(host string, t Transport) *Conn {
+	return NewConnWithDB(host, "", t)
+}
+
+func NewConnWithDB(host string, db string, t Transport) *Conn {
 	if strings.Index(host, "http://") < 0 && strings.Index(host, "https://") < 0 {
 		host = "http://" + host
 	}
@@ -27,6 +31,7 @@ func NewConn(host string, t Transport) *Conn {
 	return &Conn{
 		Host:      host,
 		transport: t,
+		db:        db,
 	}
 }
 
