@@ -12,6 +12,8 @@ const (
 type Conn struct {
 	Host      string
 	transport Transport
+	User      string
+	Password  string
 }
 
 func (c *Conn) Ping() (err error) {
