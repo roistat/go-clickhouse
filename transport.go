@@ -22,6 +22,7 @@ type HttpTransport struct {
 }
 
 func (t HttpTransport) Exec(conn *Conn, q Query, readOnly bool) (res string, err error) {
+	var req *http.Request
 	var resp *http.Response
 	query := prepareHttp(q.Stmt, q.args)
 	client := &http.Client{Timeout: t.Timeout}
@@ -29,16 +30,25 @@ func (t HttpTransport) Exec(conn *Conn, q Query, readOnly bool) (res string, err
 		if len(query) > 0 {
 			query = "?query=" + query
 		}
-		resp, err = client.Get(conn.Host + query)
+		req, err = http.NewRequest("GET", conn.Host+query, nil)
+		if err != nil {
+			return "", err
+		}
 	} else {
-		var req *http.Request
 		req, err = prepareExecPostRequest(conn.Host, q)
 		if err != nil {
 			return "", err
 		}
-
-		resp, err = client.Do(req)
 	}
+
+	if len(conn.User) > 0 {
+		req.Header.Set("X-ClickHouse-User", conn.User)
+	}
+	if len(conn.Password) > 0 {
+		req.Header.Set("X-ClickHouse-Key", conn.Password)
+	}
+
+	resp, err = client.Do(req)
 	if err != nil {
 		return "", err
 	}

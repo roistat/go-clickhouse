@@ -19,6 +19,10 @@ func NewHttpTransport() HttpTransport {
 }
 
 func NewConn(host string, t Transport) *Conn {
+	return NewConnWithAuth(host, t, "", "")
+}
+
+func NewConnWithAuth(host string, t Transport, user string, password string) *Conn {
 	if strings.Index(host, "http://") < 0 && strings.Index(host, "https://") < 0 {
 		host = "http://" + host
 	}
@@ -27,6 +31,8 @@ func NewConn(host string, t Transport) *Conn {
 	return &Conn{
 		Host:      host,
 		transport: t,
+		User:      user,
+		Password:  password,
 	}
 }
 
