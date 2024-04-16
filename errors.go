@@ -2,6 +2,7 @@ package clickhouse
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -36,23 +37,22 @@ func errorFromResponse(resp string) error {
 	if resp == "" {
 		return nil
 	}
-
-	if strings.Index(resp, "Code:") == 0 {
-		codeStr := resp[6:strings.Index(resp, ",")]
-		code, _ := strconv.Atoi(codeStr)
-		var msg string
-		msgIndex := strings.Index(resp, "e.displayText() = ")
-		if msgIndex >= 0 {
-			msgIndex += 18
-			msgEnd := strings.Index(resp, ", e.what()")
-			if msgEnd >= 0 {
-				msg = resp[msgIndex:msgEnd]
-			} else {
-				msg = resp[msgIndex:]
-			}
-		}
-		return &DbError{code, msg, resp}
+	errorPattern, err := regexp.Compile(`Code:\s(\d+)[.,]?(.*)`)
+	if err != nil {
+		return err
+	}
+	if !errorPattern.MatchString(resp) {
+		return nil
 	}
 
-	return nil
+	matches := errorPattern.FindStringSubmatch(resp)
+	code, err := strconv.Atoi(matches[1])
+	if err != nil {
+		return err
+	}
+	msg := matches[2]
+	msg = strings.ReplaceAll(msg, "e.displayText() = ", "")
+	msg = strings.ReplaceAll(msg, ", e.what()", "")
+	msg = strings.TrimSpace(msg)
+	return &DbError{code, msg, resp}
 }
